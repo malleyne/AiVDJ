@@ -24,10 +24,7 @@ void setup()  {
 } 
  
 void loop()  { 
- // int R = analogRead(RedLedPot);
- // int G = analogRead(GreenLedPot);
- // int B = analogRead(BlueLedPot);
-  
+ 
   R = Serial.read();
   G = Serial.read();
   B = Serial.read();
@@ -74,9 +71,17 @@ void loop()  {
   analogWrite(BlueLedPin7, tempB);
   analogWrite(BlueLedPin4, tempB);            
  
- //analogWrite(RedLedPin9, 255);
- //analogWrite(GreenLedPin10, 255); 
-// analogWrite(9, 255);
-// analogWrite(10, 255);
-// analogWrite(11, 255);
+ /*
+ analogWrite(RedLedPin9, 0);
+ analogWrite(GreenLedPin10, 0); 
+ analogWrite(BlueLedPin11, 255);
+ 
+ analogWrite(RedLedPin5, 255);
+ analogWrite(GreenLedPin6, 0); 
+ analogWrite(BlueLedPin7, 255);
+ 
+ analogWrite(RedLedPin2, 255);
+ analogWrite(GreenLedPin3, 255); 
+ analogWrite(BlueLedPin4, 0);
+ */
 }
