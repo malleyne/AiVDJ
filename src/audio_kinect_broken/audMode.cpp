@@ -1,196 +1,160 @@
 #include "audMode.h"
 #include "ofAppGlutWindow.h"
 
+//v1
+
+
 //--------------------------------------------------------------
+audMode::audMode(){
+	
+}
+
+audMode::~audMode(){
+	
+}
+
+
 void audMode::setup() {
 	ofSetLogLevel(OF_LOG_VERBOSE);
 	
-	/*----------------kinect setup--------------------*/
+	c1.setHex(0xF9CDAD); //butternut squash
+	c2.setHex(0xFFD700); //cornucopia
+	c3.setHex(0xFC9D9A); //peony
+	c4.setHex(0x83AF9B); //Duck's Egg
+	//c5.setHex(0xC8C8A9); //Timothy Hay
+	alpha = 255;
+	
+	/*------------------------------------------------------*/
 	// enable depth->video image calibration
 	kinect.setRegistration(true);
 	kinect.init();
+	//kinect.init(true); // shows infrared instead of RGB video image
+	//kinect.init(false, false); // disable video image (faster fps)
 	kinect.open();		// opens first available kinect
-	/*------------------------------------------------*/
+	/*------------------------------------------------------*/
 	
-	/*------------------set up gray image----------------*/
+	
+	/*------------------------------------------------------*/
+	vidGrabber.setDeviceID(5);
+	vidGrabber.initGrabber( 320, 240 );
+	/*------------------------------------------------------*/
+	
+	
+	/*---------------allocate images----------------------------------*/
+	colorImage.allocate( 320, 240 );
 	grayImage.allocate(kinect.width, kinect.height);
 	grayThreshNear.allocate(kinect.width, kinect.height);
 	grayThreshFar.allocate(kinect.width, kinect.height);
+	/*---------------------------------------------------------------*/
 	
-	nearThreshold = 230;
-	farThreshold = 70;
-	/*------------------------------------------------*/
 	
-	/*------------------------------------------------*/
+	/*---------------init arduino stuffs-----------------------------*/
+	// this will print out all of the devices attached to your computer
+	serial.enumerateDevices();
+	//serial.setup("COM4"); // windows will look something like this.
+	serial.setup("/dev/tty.usbmodem641",9600); // mac osx looks like this
+	//serial.setup("/dev/ttyUSB0", 9600); //linux looks like this
+	/*---------------------------------------------------------------*/
+	
+	printf(".................setting up................\n");
+	serial.listDevices();
+	
+	nearThreshold = 255;
+	farThreshold = 255;
+	
 	ofSetFrameRate(60);
+	
 	// zero the tilt on startup
-	angle = 0;
+	angle = 20;
 	kinect.setCameraTiltAngle(angle);
 	// start from the front
 	bDrawPointCloud = false;
-	/*------------------------------------------------*/
-	
-	/*------------------arduino stuffs----------------*/
-	serial.enumerateDevices();
-	serial.setup("/dev/tty.usbmodem641",9600);
-	/*------------------------------------------------*/
-	
-	updates = 0;
-	choicecolor = ofColor(0,0,0);
-	distance = 0.0;
-	last_vec.set(0,0,0);
 }
 
 //--------------------------------------------------------------
 void audMode::update() {
 	
-	ofBackground(0);
-	
+	ofBackground(100, 100, 100);
 	kinect.update();
 	
-	// there is a new frame and we are connected
-	if(kinect.isFrameNew()) {
-		updates++;
-		// load grayscale depth image from the kinect source
-		grayImage.setFromPixels(kinect.getDepthPixels(), kinect.width, kinect.height);
-		
-		grayThreshNear = grayImage;
-		grayThreshFar = grayImage;
-		grayThreshNear.threshold(nearThreshold, true);
-		grayThreshFar.threshold(farThreshold);
-		cvAnd(grayThreshNear.getCvImage(), grayThreshFar.getCvImage(), grayImage.getCvImage(), NULL);
-		
-		// update the cv images
-		grayImage.flagImageChanged();
-		
+	/*-------------------arduino stuff--------------------*/
+	int i, len, largest;
+	
+	vidGrabber.grabFrame();
+	if (vidGrabber.isFrameNew()) {
+		colorImage = vidGrabber.getPixels();
+        grayImage = colorImage;
+
 		// find contours which are between the size of 20 pixels and 1/3 the w*h pixels.
 		// also, find holes is set to true so we will get interior contours as well....
-		contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 10, false);
-		
-		
-		
+		contourFinder.findContours(grayImage, 10, (kinect.width*kinect.height)/2, 20, false);
+
 		/*Now that the contours have been processed we can try to figure out which is the largest 
 		 since that’s probably the one we’re interested in.*/
-		int size = contourFinder.blobs.size();
+		largest = -1;
 		printf("contourFinder.blobs.size() = %d\n", int(contourFinder.blobs.size()));
-		if(size > 0) {
+		if(contourFinder.blobs.size() > 0) {
+			largest = 0;
 			//why do we skip the last one? if doesn't work subtract 1 from condition portion of loop
-			ofVec3f currV;
-			currV.set(0,0,0);
 			for (int i = 1; i < contourFinder.blobs.size(); i++) {
-				currV += contourFinder.blobs.at(i).centroid;
+				if(contourFinder.blobs.at(i).area > contourFinder.blobs.at(largest).area) {
+					largest = i;
+				}
 			}
-			currV /= size; //find average blob
-			if (updates == 1) {
-				last_vec = currV;
-			} else {
-				distance += last_vec.distance(currV); //get total distance travelled for certain num of updates
-				//printf("distance %d", distance);
-				last_vec = currV;
-			}
+			printf("largest = %d", largest);
 			// this is important: we don't want to send data to the serial port
 			// on every frame because the Arduino runs much more slowly than the
 			// oF app.
-			if(ofGetFrameNum() % 5 == 0) {
-				//loudness of sound = brightness of lights that are on	
-				//speed determines number lit
-				if (updates >= 16) {
-					//mod by 10 broken into 3 sections forgetting zero
-					int speed = (int(distance*2 + 1)/updates)%10;
-					printf("speed = %d\n", speed);
-					//speed = 1;
-					
-					switch (speed) {
-						case 1: //red
-							serial.writeByte(255); //r
-							serial.writeByte(0); //g
-							serial.writeByte(0);//b
-							choicecolor = ofColor(255,0,0);
-							printf("red = %d\n", speed);
-							break;
-						case 2:
-							choicecolor = ofColor(255,255,0);
-						case 3: //yellow
-							serial.writeByte(255);
-							serial.writeByte(255);
-							serial.writeByte(0);
-							printf("yellow = %d\n", speed);
-							choicecolor = ofColor(255,255,0);
-							break;
-						case 4:
-							choicecolor = ofColor(0,255,0);
-						case 5: //green
-							serial.writeByte(0);
-							serial.writeByte(255);
-							serial.writeByte(0);
-							choicecolor = ofColor(0,255,0);
-							printf("green = %d\n", speed);
-							break;
-						case 6: //cyan
-							serial.writeByte(0);
-							serial.writeByte(255);
-							serial.writeByte(255);
-							choicecolor = ofColor(0,255,255);
-							printf("cyan = %d\n", speed);
-							break;
-						case 7: //blue
-							serial.writeByte(0);
-							serial.writeByte(0);
-							serial.writeByte(255);
-							choicecolor = ofColor(0, 0,255);
-							printf("blue = %d\n", speed);
-							break;
-						case 8: //magenta
-							serial.writeByte(255);
-							serial.writeByte(0);
-							serial.writeByte(255);
-							choicecolor = ofColor(255,0,255);
-							printf("magenta = %d\n", speed);
-							break;
-						default: //white
-							serial.writeByte(255);
-							serial.writeByte(255);
-							serial.writeByte(255);
-							choicecolor = ofColor(255,255,255);
-							printf("white = %d\n", speed);
-							break;
-					}					
-					updates = 0;
+			if(ofGetFrameNum() % 6 == 0) {
+				if(largest != -1) {
+					//serial.writeByte(contourFinder.blobs.at(largest).centroid.y/kinect.height * 255);
+					//printf("<#message#>");
 					//serial.writeByte(contourFinder.blobs.at(largest).centroid.x/kinect.width * 255);
 				}
 			}
 		}
-	}	
+	}
+	/*-----------------------------------------------------------------------------------*/
+	
 }
 
 //--------------------------------------------------------------
 void audMode::draw() {
-	ofBackground(0);
-	//ofSetColor(0, 0, 0);
-	easyCam.begin();
-	drawPointCloud();
-	// draw from the live kinect
+	/*	ofEnableAlphaBlending();
+	 ofBackground(50,1);
+	 ofDisableAlphaBlending();
+	 
+	 easyCam.begin();
+	 ofSetColor(0,255,255);
+	 drawPointCloud();
+	 easyCam.end();*/
+	ofSetColor( 255, 255, 255);	
+	printf("grayImage %s\n", kinect.getDepthPixels());
+	kinect.drawDepth(10, 10, 400, 300);
+	kinect.draw(420, 10, 400, 300);
+	
 	grayImage.draw(10, 320, 400, 300);
 	contourFinder.draw(10, 320, 400, 300);
-	easyCam.end();	
+	
 }
 
-void audMode::drawPointCloud() {
+void audMode::drawPointCloud() {	
 	int w = 640;
 	int h = 480;
 	ofMesh mesh;
+	ofMesh mesh_r;
 	mesh.setMode(OF_PRIMITIVE_POINTS);
-	ofMesh mesh2;
-	mesh2.setMode(OF_PRIMITIVE_POINTS);
-
-	int step = 2;
+	mesh_r.setMode(OF_PRIMITIVE_POINTS);
+	int step = 3;
 	for(int y = 0; y < h; y += step) {
 		for(int x = 0; x < w; x += step) {
 			if(kinect.getDistanceAt(x, y) > 0) {
-				mesh.addColor(ofColor(choicecolor));
+				mesh_r.addColor(ofColor(255, 255, 255, alpha));
+				mesh_r.addVertex(kinect.getWorldCoordinateAt(x, y));
+				mesh.addColor(ofColor(230, 230, 230, alpha));
 				mesh.addVertex(kinect.getWorldCoordinateAt(x, y));
-				mesh2.addColor(ofColor(choicecolor));
-				mesh2.addVertex(kinect.getWorldCoordinateAt(x, y));
+				ofVec3f tmp = kinect.getWorldCoordinateAt(x, y);
+				//printf("%d %d %d\n", tmp.x, tmp.y, tmp.z );
 			}
 		}
 	}
@@ -199,38 +163,64 @@ void audMode::drawPointCloud() {
 	// the projected points are 'upside down' and 'backwards' 
 	ofScale(-1, -1, -1);
 	ofTranslate(w/2, 0, -1000); // center the points a bit
+	//ofTranslate(0, 0, -1000); // center the points a bit
 	glEnable(GL_DEPTH_TEST);
-	mesh.drawVertices();
+	int counter = 0;
+	mesh.drawVertices(); 
+	//mesh.drawWireframe();
 	glDisable(GL_DEPTH_TEST);
 	ofPopMatrix();
-							  
+	
+	
 	glPointSize(1);
 	ofPushMatrix();
 	// the projected points are 'upside down' and 'backwards' 
 	ofScale(1, -1, -1);
 	ofTranslate(-w/2, 0, -1000); // center the points a bit
 	glEnable(GL_DEPTH_TEST);
-	mesh2.drawVertices();
+	mesh_r.drawVertices();
+	//mesh_r.drawFaces ();
 	glDisable(GL_DEPTH_TEST);
-	ofPopMatrix();
+	ofPopMatrix(); 
+	
+}
+
+ofColor audMode::getColor(int x) {
+	switch (x) {
+		case 1:
+			return c1;
+			break;
+		case 2:
+			return c2;
+			break;
+		case 3:
+			return c3;
+			break;
+		case 4:
+			return c4;
+			break;
+		default:
+			//return c5;
+			break;
+	}
 }
 
 //--------------------------------------------------------------
 void audMode::exit() {
 	kinect.setCameraTiltAngle(0); // zero the tilt on exit
 	kinect.close();
+	
 }
 
 //--------------------------------------------------------------
 void audMode::AudkeyPressed (int key) {
-	printf("i hit fucking p");
 	switch (key) {
 		case ' ':
+			bThreshWithOpenCV = !bThreshWithOpenCV;
 			break;
 			
 		case'p':
-			bDrawPointCloud = !bDrawPointCloud;
-			break;
+			bDrawPointCloud = !bDrawPointCloud;			break;
 			
 		case '>':
 		case '.':
@@ -298,3 +288,4 @@ void audMode::AudmouseReleased(int x, int y, int button)
 //--------------------------------------------------------------
 void audMode::AudwindowResized(int w, int h)
 {}
+

@@ -27,10 +27,10 @@ void testApp::setup(){
 	ofEnableSmoothing();
 
 	/*-------Alex------*/
-	physics.setup();
+	//physics.setup();
 	numParticles = 10;
 	/*-------Jake-------*/
-	DJMODE.setup();
+	//DJMODE.setup();
 	/*-----Melissa-----*/
 	Aud.setup();
 
@@ -71,15 +71,15 @@ void testApp::update(){
 	/*-------Modes-----*/
 	switch(mode){
 		case DJ:
-			DJMODE.update(DjDepthSliderLow, DjDepthSliderHigh);
+		//	DJMODE.update(DjDepthSliderLow, DjDepthSliderHigh);
 			break;
 		case AUD:
 			Aud.update();
 			break;
 		default:
 		case PHYSICS:
-			physics.addParticles(numParticles);
-			physics.update();
+		//	physics.addParticles(numParticles);
+		//  physics.update();
 			break;
 		}
 }
@@ -91,13 +91,13 @@ void testApp::draw(){
 	if(drawDisplay){
 		switch(mode){
 		case DJ:
-			DJMODE.draw();
+			//DJMODE.draw();
 			break;
 		case AUD:
 			Aud.draw();
 			break;
 		case PHYSICS:{
-			physics.render();
+			//physics.render();
 			}
 			break;
 		case VID:
@@ -120,16 +120,17 @@ void testApp::draw(){
 		ofRect(djRect);
 		ofTranslate(djRect.x, djRect.y);
 		ofPushStyle();
-		DJMODE.kinect.drawDepth(0, 0, djRect.width, djRect.height);
-		DJMODE.kinect.draw(0, 0, djRect.width, djRect.height);
+		//DJMODE.kinect.drawDepth(0, 0, djRect.width, djRect.height);
+		//DJMODE.kinect.draw(0, 0, djRect.width, djRect.height);
 		ofPopStyle();
 		ofPopMatrix();
 	}
 	if(drawAudKinect){
-		ofPushStyle();
-		ofSetColor(white);
-		ofRect(audRect);
-		ofPopStyle();
+	//	ofPushStyle();
+	//	ofSetColor(white);
+	//	ofRect(audRect);
+	//  ofPopStyle();
+		
 	}/* else if(drawAud){
 		ofPushStyle();
 		ofSetColor(ccomp5);
@@ -145,6 +146,7 @@ void testApp::keyPressed(int key){
 	if(drawDJ){
 		DJMODE.DJkeyPressed(key);
 	} else if (drawAud) {
+		printf("i hit the fucking key");
 		Aud.AudkeyPressed(key);
 	}
 	if( key == 's' ){
