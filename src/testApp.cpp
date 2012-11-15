@@ -78,9 +78,7 @@ void testApp::update(){
 			break;
 		default:
 		case PHYSICS:
-		//	physics.addParticles(numParticles);
-		//  physics.update();
-			break;
+			physics.update();
 		}
 }
 
@@ -95,9 +93,11 @@ void testApp::draw(){
 			break;
 		case AUD:
 			Aud.draw();
+				Aud.draw();
 			break;
-		case PHYSICS:{
-			//physics.render();
+		case PHYSICS:
+			{
+			physics.render();
 			}
 			break;
 		case VID:
@@ -148,6 +148,7 @@ void testApp::keyPressed(int key){
 	} else if (drawAud) {
 		printf("i hit the fucking key");
 		Aud.AudkeyPressed(key);
+		DJMODE.DJkeyPressed(key);
 	}
 	if( key == 's' ){
 		soundStream.start();
@@ -212,8 +213,9 @@ void testApp::audioIn(float * input, int bufferSize, int nChannels){
 	smoothedVol += 0.07 * curVol;
 	
 	bufferCounter++;
+	}
 	
-}
+
 
 void testApp::initRects(){
 	float spacer = 16;
@@ -302,6 +304,8 @@ void testApp::guiColors(ofxUIWidget *w){
 	w->setColorFill(ccomp2);
 	w->setColorFillHighlight(ccomp4);
 	w->setColorOutline(ccomp2);*/
+}
+
 }
 void testApp::guiSetup(){
 
