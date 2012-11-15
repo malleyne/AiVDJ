@@ -3,13 +3,13 @@
 
 //--------------------------------------------------------------
 void audMode::setup() {
-	ofSetLogLevel(OF_LOG_VERBOSE);
+	//ofSetLogLevel(OF_LOG_VERBOSE);
 	
 	/*----------------kinect setup--------------------*/
 	// enable depth->video image calibration
 	kinect.setRegistration(true);
 	kinect.init();
-	kinect.open();		// opens first available kinect
+	kinect.open();
 	/*------------------------------------------------*/
 	
 	/*------------------set up gray image----------------*/

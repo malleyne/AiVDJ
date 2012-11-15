@@ -2,6 +2,8 @@
 
 #include "ofMain.h"
 #include "ofxUI.h"
+#include "beatDetect.h"
+#include "ofxColourTheory.h"
 
 #include "alex/physicsMode.h"
 #include "jake/djMode.h"
@@ -40,18 +42,26 @@ class testApp : public ofBaseApp{
 
 		ofxUICanvas *gui;
 		float guiWidth, guiHeight;
+
 		float slider2, DjDepthSliderHigh, DjDepthSliderLow; //change these after you decide what they're for
-		bool drawDJ, drawAud, drawDisplay;
+		bool drawDJ, drawAud, drawDisplay, drawSound;
+
 		bool drawDJKinect, drawAudKinect;
 		ofColor cmain, ccomp1, ccomp2, ccomp3, ccomp4, ccomp5, white;
 		ofRectangle displayRect, djRect, audRect, guiRect;
 
 		MODE mode;
 		//int nearThresh, int farThresh;
+
 		/*-----------Alex-----------*/
 		physicsMode physics;
 		physicsMode::source::Type sourceType;
 		int numParticles;
+
+		vector<ofColor> colors;
+		ofxColourTheory colorGen;
+
+		void generateColors(ofColor seed);
 		/*-----------Jake-----------*/
 		djMode DJMODE;
 		/*-----------Melissa-----------*/
@@ -59,23 +69,37 @@ class testApp : public ofBaseApp{
 
 
 		/*-----------Sound-----------*/
+		/*
+			sub bass : 0 > 100hz
+			mid bass : 80 > 500hz
+			mid range: 400 > 2khz
+			upper mid: 1k > 6khz
+			high freq: 4k > 12khz
+			Very high freq: 10k > 20khz and above
+		*/
+
 		void audioIn(float * input, int bufferSize, int nChannels); 
-	
+
+		void drawVolGraphs();
+		void drawBeatBins();
+
 		vector <float> left;
 		vector <float> right;
 		vector <float> volHistory;
 		
-		int 	bufferCounter;
-		int 	drawCounter;
-		
-		float smoothedVol;
-		float scaledVol;
-		
-		ofSoundStream soundStream;
+		float cVol;
+		float pVol;
 
+		ofSoundStream soundStream;
 		ofxUIMovingGraph *audio;
 
-		/*-----------Test Variables-----------*/
-	int r,g,b;
+		beatDetect bd;
+		
+	// 0 output channels, 
+	// 2 input channels
+	// 44100 samples per second
+	// 256 samples per buffer
+	// 4 num buffers (latency)
+
 	
 };
