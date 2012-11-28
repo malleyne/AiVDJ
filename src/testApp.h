@@ -7,6 +7,7 @@
 
 #include "alex/physicsMode.h"
 #include "jake/djMode.h"
+#include "alex/vidMode.h"
 #include "melissa/audMode.h"
 
 class testApp : public ofBaseApp{
@@ -25,6 +26,9 @@ class testApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+
+		/*-----------util-----------*/
+		int mouseX, mouseY;
 
 		/*-----------gui-----------*/
 		enum MODE{
@@ -54,14 +58,21 @@ class testApp : public ofBaseApp{
 		//int nearThresh, int farThresh;
 
 		/*-----------Alex-----------*/
+		//Physics
 		physicsMode physics;
 		physicsMode::source::Type sourceType;
 		int numParticles;
 
+		//Video
+		vidMode vid;
+
+		//Color Stuff
 		vector<ofColor> colors;
 		ofxColourTheory colorGen;
+		ColourConstraints curShade;
 
-		void generateColors(ofColor seed);
+		void generateColors(ColourShade seed);
+		void drawColorSwatches(int x, int y);
 		/*-----------Jake-----------*/
 		djMode DJMODE;
 		/*-----------Melissa-----------*/
