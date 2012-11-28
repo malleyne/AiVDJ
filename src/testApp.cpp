@@ -61,13 +61,13 @@ void testApp::update(){
 //	audio->addPoint(scaledVol*100);
 	//calculate average volume as a single float instead of per frequency
 	/*-------kinect side displays------*/
-	if(drawDJKinect){
+/*	if(drawDJKinect){
 		DJMODE.update(DjDepthSliderLow, DjDepthSliderHigh);
 	}
 	if(drawAudKinect){
 		Aud.update();
 
-	}
+	}*/
 
 	bd.updateFFT();
 
@@ -90,7 +90,7 @@ void testApp::update(){
 			if (!DJMODE.WheresMyDj){mode = PHYSICS;}
 			break;
 		case AUD:
-			Aud.update();
+			Aud.update(cVol*100);
 			break;
 		default:
 		case PHYSICS:
