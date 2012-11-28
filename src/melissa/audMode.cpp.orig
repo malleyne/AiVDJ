@@ -5,12 +5,30 @@
 void audMode::setup() {
 	//ofSetLogLevel(OF_LOG_VERBOSE);
 	
+<<<<<<< HEAD
 	/*----------------kinect setup--------------------*/
+=======
+	c1.setHex(0xF9CDAD); //butternut squash
+	c2.setHex(0xFFD700); //cornucopia
+	c3.setHex(0xFC9D9A); //peony
+	c4.setHex(0x83AF9B); //Duck's Egg
+	//c5.setHex(0xC8C8A9); //Timothy Hay
+	alpha = 255;
+	
+>>>>>>> b1d16c55ff335023a7a3d26e2c62d6cae930a805
 	// enable depth->video image calibration
 	kinect.setRegistration(true);
 	kinect.init();
-	kinect.open();
+<<<<<<< HEAD
+	kinect.open();		// opens first available kinect
 	/*------------------------------------------------*/
+=======
+	kinect.init(true); // shows infrared instead of RGB video image
+	kinect.init(false, false); // disable video image (faster fps)
+	
+	kinect.open();
+	//kinect.open("A00362A08602047A");		// opens kinect
+>>>>>>> b1d16c55ff335023a7a3d26e2c62d6cae930a805
 	
 	/*------------------set up gray image----------------*/
 	grayImage.allocate(kinect.width, kinect.height);
@@ -42,7 +60,7 @@ void audMode::setup() {
 }
 
 //--------------------------------------------------------------
-void audMode::update(float vol) {
+void audMode::update() {
 	
 	ofBackground(0);
 	
@@ -99,60 +117,59 @@ void audMode::update(float vol) {
 					int speed = (int(distance*2 + 1)/updates)%10;
 					printf("speed = %d\n", speed);
 					//speed = 1;
-					int value = (int) getValue(vol);
+					
 					switch (speed) {
 						case 1: //red
-							//serial.writeByte(255); //r
-							serial.writeByte(value);
+							serial.writeByte(255); //r
 							serial.writeByte(0); //g
 							serial.writeByte(0);//b
-							choicecolor = ofColor(255,0,0, value);
+							choicecolor = ofColor(255,0,0);
 							printf("red = %d\n", speed);
 							break;
 						case 2:
-							choicecolor = ofColor(255,255,0, value);
+							choicecolor = ofColor(255,255,0);
 						case 3: //yellow
-							serial.writeByte(value);
-							serial.writeByte(value);
+							serial.writeByte(255);
+							serial.writeByte(255);
 							serial.writeByte(0);
 							printf("yellow = %d\n", speed);
-							choicecolor = ofColor(255,255,0, value);
+							choicecolor = ofColor(255,255,0);
 							break;
 						case 4:
-							choicecolor = ofColor(0,255,0,value);
+							choicecolor = ofColor(0,255,0);
 						case 5: //green
 							serial.writeByte(0);
-							serial.writeByte(value);
+							serial.writeByte(255);
 							serial.writeByte(0);
-							choicecolor = ofColor(0,255,0, value);
+							choicecolor = ofColor(0,255,0);
 							printf("green = %d\n", speed);
 							break;
 						case 6: //cyan
 							serial.writeByte(0);
-							serial.writeByte(value);
-							serial.writeByte(value);
-							choicecolor = ofColor(0,255,255,value);
+							serial.writeByte(255);
+							serial.writeByte(255);
+							choicecolor = ofColor(0,255,255);
 							printf("cyan = %d\n", speed);
 							break;
 						case 7: //blue
 							serial.writeByte(0);
 							serial.writeByte(0);
-							serial.writeByte(value);
-							choicecolor = ofColor(0, 0,255,value);
+							serial.writeByte(255);
+							choicecolor = ofColor(0, 0,255);
 							printf("blue = %d\n", speed);
 							break;
 						case 8: //magenta
-							serial.writeByte(value);
+							serial.writeByte(255);
 							serial.writeByte(0);
-							serial.writeByte(value);
-							choicecolor = ofColor(255,0,255, value);
+							serial.writeByte(255);
+							choicecolor = ofColor(255,0,255);
 							printf("magenta = %d\n", speed);
 							break;
 						default: //white
-							serial.writeByte(value);
-							serial.writeByte(value);
-							serial.writeByte(value);
-							choicecolor = ofColor(255,255,255,value);
+							serial.writeByte(255);
+							serial.writeByte(255);
+							serial.writeByte(255);
+							choicecolor = ofColor(255,255,255);
 							printf("white = %d\n", speed);
 							break;
 					}					
@@ -220,17 +237,6 @@ void audMode::drawPointCloud() {
 void audMode::exit() {
 	kinect.setCameraTiltAngle(0); // zero the tilt on exit
 	kinect.close();
-}
-
-//using volume to determine the brightness of the color
-float audMode::getValue(float volume) {
-	return mapValue(volume, 0, 2);
-}
-
-//map value to 0-255 range from low-high range
-float audMode::mapValue(float value, float low, float high) {
-	float fraction = value / (high-low);
-	return 255 * fraction;
 }
 
 //--------------------------------------------------------------

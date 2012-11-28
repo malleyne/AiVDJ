@@ -13,12 +13,14 @@ class audMode : public ofBaseApp {
 public:
 	
 	void setup();
-	void update();
+	void update(float vol);
 	void draw();
 	void exit();
 	
 	void drawPointCloud();
 	
+	float getValue(float volume);
+	float mapValue(float value, float low, float high);
 	void AudkeyPressed(int key);
 	void AudmouseDragged(int x, int y, int button);
 	void AudmousePressed(int x, int y, int button);
