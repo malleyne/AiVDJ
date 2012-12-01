@@ -39,6 +39,8 @@ void audMode::setup() {
 	choicecolor = ofColor(0,0,0);
 	distance = 0.0;
 	last_vec.set(0,0,0);
+	moveCam = 0.0;
+	center = kinect.getWorldCoordinateAt(320, 240);
 }
 
 //--------------------------------------------------------------
@@ -91,6 +93,11 @@ void audMode::update(float vol) {
 			// this is important: we don't want to send data to the serial port
 			// on every frame because the Arduino runs much more slowly than the
 			// oF app.
+			easyCam.begin();	
+			moveCam+=.5;
+			float xx = moveCam;
+			float yy=sin(ofGetElapsedTimef()*0.4)*150;
+			float zz=cos(ofGetElapsedTimef()*0.4)*150;
 			if(ofGetFrameNum() % 5 == 0) {
 				//loudness of sound = brightness of lights that are on	
 				//speed determines number lit
@@ -159,6 +166,8 @@ void audMode::update(float vol) {
 					updates = 0;
 					//serial.writeByte(contourFinder.blobs.at(largest).centroid.x/kinect.width * 255);
 				}
+				easyCam.setPosition(xx,yy,zz);
+				easyCam.end();
 			}
 		}
 	}	
@@ -224,7 +233,7 @@ void audMode::exit() {
 
 //using volume to determine the brightness of the color
 float audMode::getValue(float volume) {
-	return mapValue(volume, 0, 2);
+	return mapValue(volume, 0, 2)+100;
 }
 
 //map value to 0-255 range from low-high range

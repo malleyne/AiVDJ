@@ -45,6 +45,7 @@ public:
 	/*----------camera stuff----------------*/
 	int angle;
 	ofEasyCam easyCam; // used for viewing the point cloud
+	float moveCam;
 	/*----------------------------------------*/
 	
 	
@@ -56,4 +57,5 @@ public:
 	int updates;
 	ofColor choicecolor; 
 	ofVec3f last_vec;
+	ofVec3f center;
 };

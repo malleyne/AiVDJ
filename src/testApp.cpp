@@ -46,7 +46,7 @@ void testApp::setup(){
 	/*-------Alex-------*/
 	ofBackground(ccomp5.r,ccomp5.g,ccomp5.b,100);
 	physics.setup();
-	vid.setup();
+	//vid.setup();
 	//curShade = CT_SOFT;
 	generateColors(CT_SOFT);
 	numParticles = 0;
@@ -64,7 +64,7 @@ void testApp::update(){
 	//calculate average volume as a single float instead of per frequency
 	/*-------kinect side displays------*/
 	if(drawDJKinect){
-		DJMODE.update(left, DjDepthSliderLow, DjDepthSliderHigh);
+		//DJMODE.update(left, DjDepthSliderLow, DjDepthSliderHigh);
 	}
 	if(drawAudKinect){
 		//Aud.update(cVol);
@@ -88,8 +88,8 @@ void testApp::update(){
 	/*-------Modes-----*/
 	switch(mode){
 		case DJ:
-			DJMODE.update(left, DjDepthSliderLow, DjDepthSliderHigh);
-			DJMODE.updateGlobals(colorGen.getRandom(colors), isChanged);
+			//DJMODE.update(left, DjDepthSliderLow, DjDepthSliderHigh);
+			//DJMODE.updateGlobals(colorGen.getRandom(colors), isChanged);
 			if (!DJMODE.WheresMyDj){mode = PHYSICS;}
 			break;
 		case AUD:
@@ -101,7 +101,7 @@ void testApp::update(){
 			physics.updateSources(cVol *100, colorGen.getRandom(colors), isChanged, bd.isKick(), bd.isSnare());
 			physics.update();
 			break;
-			vid.update(mouseX, mouseY);
+			//vid.update(mouseX, mouseY);
 	}
 }
 
@@ -120,7 +120,7 @@ void testApp::draw(){
 	if(drawDisplay){
 		switch(mode){
 		case DJ:
-			DJMODE.draw();
+			//DJMODE.draw();
 			break;
 		case AUD:
 			Aud.draw();
@@ -132,7 +132,7 @@ void testApp::draw(){
 			ofSetBackgroundAuto(false);
 			ofSetColor(0,0,0, (int)ofRandom(10,30));
 			ofRect(0,0,ofGetScreenWidth(), ofGetScreenHeight());
-			vid.draw(mouseX, mouseY);
+			//vid.draw(mouseX, mouseY);
 			break;
 		default:
 				ofPushStyle();
@@ -243,11 +243,6 @@ void testApp::drawVolGraphs(){
 	ofPopStyle();
 }
 //--------------------------------------------------------------
-
-
-
-
-
 void testApp::audioIn(float *input, int bufferSize, int nChannels){	
 	// bd.audioReceived(input, bufferSize);
 
@@ -258,7 +253,6 @@ void testApp::audioIn(float *input, int bufferSize, int nChannels){
 		left[i]		= input[i*2]*0.5;
 		right[i]	= input[i*2+1]*0.5;
 	}
-
 	/*------Beat Detection-------*/
 	bd.audioReceived(input, bufferSize);
 }
