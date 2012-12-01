@@ -66,6 +66,8 @@ class testApp : public ofBaseApp{
 
 		//Video
 		vidMode vid;
+		int vidX;
+		int vidY;
 
 		//Color Stuff
 		vector<ofColor> colors;

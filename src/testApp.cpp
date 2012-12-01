@@ -44,7 +44,7 @@ void testApp::setup(){
 	ofEnableSmoothing();
 //				ofEnableAlphaBlending();
 	/*-------Alex-------*/
-	ofBackground(ccomp5.r,ccomp5.g,ccomp5.b,100);
+	ofBackground(40);
 	physics.setup();
 	//vid.setup();
 	//curShade = CT_SOFT;
@@ -72,6 +72,7 @@ void testApp::update(){
 
 
 	bd.updateFFT();
+
 
 	bool isChanged = false;
 	float fft_bins = 512.0f; //this really should be a class constant
@@ -102,6 +103,10 @@ void testApp::update(){
 			physics.update();
 			break;
 			//vid.update(mouseX, mouseY);
+			if(bd.isKick()){
+				vidX = (int) ofRandom(0, ofGetScreenWidth()-100);
+				vidY = (int) ofRandom(0, ofGetScreenHeight()-100);
+			}
 	}
 }
 
@@ -177,19 +182,31 @@ void testApp::drawBeatBins(){
 	float rectHeight = 150;
 	float spacer = 16;
 	ofPushMatrix();
-	ofTranslate(ofGetWidth()- (rectWidth+spacer),ofGetHeight()-(rectHeight*1.5 + spacer), 0);
-
+	ofTranslate(ofGetWidth()- (rectWidth+spacer),ofGetHeight()-(rectHeight*2.75 + spacer), 0);
 	ofSetColor(white);
 	bd.drawSubbands();
-	//ofTranslate(0, rectHeight + spacer, 0);
 	for (int i = 1; i < (int)rectWidth/2; i++){
         if(i % 16 == 0)
             ofSetColor(ccomp3);
         else
             ofSetColor(white);
-		ofLine(10+(i*3), 150,  10+(i*3),150-bd.magnitude_average[i]*10.0f);
+		ofLine(10+(i*3), rectHeight+spacer*2,  10+(i*3),rectHeight+spacer*2-bd.magnitude_average[i]*10.0f);
 	}
-	ofTranslate(0,rectHeight+spacer*2,0);
+	ofTranslate(0,rectHeight/2+spacer*2,0);
+	ofDrawBitmapString("Magnitude Average",0,0);
+	ofTranslate(0,rectHeight/2 + spacer*2,0);
+	ofDrawBitmapString("Smoothed FFT",0,0);
+	ofSetColor(white);
+	ofTranslate(0,spacer,0);
+	bd.drawSmoothedFFT();
+
+	ofPushMatrix();
+	ofTranslate (32*3+26,0,0);
+	ofDrawBitmapString("Beat Detection",0,-spacer);
+	bd.drawBeats();
+	ofPopMatrix();
+
+	ofTranslate(0,rectHeight/2+spacer*2,0);
 	if(bd.isSnare()){
 		ofSetColor(ccomp3);
 		ofDrawBitmapString("snare",0,0);
@@ -456,8 +473,6 @@ void testApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button){
-	if(mode == PHYSICS)
-		physics.mousePressed(physicsMode::source::ORBIT, ofVec3f((float)x,(float)y,0));
 }
 
 //--------------------------------------------------------------
