@@ -40,7 +40,7 @@ void audMode::setup() {
 	distance = 0.0;
 	last_vec.set(0,0,0);
 	moveCam = 0.0;
-	center = kinect.getWorldCoordinateAt(320, 240);
+	flipBit = 1;
 }
 
 //--------------------------------------------------------------
@@ -94,10 +94,16 @@ void audMode::update(float vol) {
 			// on every frame because the Arduino runs much more slowly than the
 			// oF app.
 			easyCam.begin();	
-			moveCam+=.5;
+			if (moveCam > 800 || moveCam < -800) {
+				flipBit*=-1;
+			}
+			moveCam+=(5*flipBit);
 			float xx = moveCam;
 			float yy=sin(ofGetElapsedTimef()*0.4)*150;
 			float zz=cos(ofGetElapsedTimef()*0.4)*150;
+			//easyCam.pan(180);
+			easyCam.setPosition(xx,yy,zz);
+
 			if(ofGetFrameNum() % 5 == 0) {
 				//loudness of sound = brightness of lights that are on	
 				//speed determines number lit
@@ -166,7 +172,6 @@ void audMode::update(float vol) {
 					updates = 0;
 					//serial.writeByte(contourFinder.blobs.at(largest).centroid.x/kinect.width * 255);
 				}
-				easyCam.setPosition(xx,yy,zz);
 				easyCam.end();
 			}
 		}
@@ -175,7 +180,8 @@ void audMode::update(float vol) {
 
 //--------------------------------------------------------------
 void audMode::draw() {
-	ofBackground(0);
+	//ofBackground(0);
+	ofBackground(10);
 	//ofSetColor(0, 0, 0);
 	easyCam.begin();
 	drawPointCloud();
@@ -197,7 +203,7 @@ void audMode::drawPointCloud() {
 	for(int y = 0; y < h; y += step) {
 		for(int x = 0; x < w; x += step) {
 			if(kinect.getDistanceAt(x, y) > 0) {
-				mesh.addColor(ofColor(choicecolor));
+				mesh.addColor(choicecolor);
 				mesh.addVertex(kinect.getWorldCoordinateAt(x, y));
 				mesh2.addColor(ofColor(choicecolor));
 				mesh2.addVertex(kinect.getWorldCoordinateAt(x, y));
@@ -233,7 +239,7 @@ void audMode::exit() {
 
 //using volume to determine the brightness of the color
 float audMode::getValue(float volume) {
-	return mapValue(volume, 0, 2)+100;
+	return mapValue(volume, 0, 2)+25;
 }
 
 //map value to 0-255 range from low-high range

@@ -58,4 +58,5 @@ public:
 	ofColor choicecolor; 
 	ofVec3f last_vec;
 	ofVec3f center;
+	int flipBit;
 };

@@ -116,7 +116,7 @@ void testApp::draw(){
 	ofSetBackgroundAuto(true);
 	//sound
 	//if(drawSound){
-		drawVolGraphs();
+	//	drawVolGraphs();
 		drawBeatBins();
 	//}
 
