@@ -6,10 +6,9 @@
 #include "ofxColourTheory.h"
 
 #include "alex/physicsMode.h"
-#include "alex/vidMode.h"
 #include "jake/djMode.h"
+#include "alex/vidMode.h"
 #include "melissa/audMode.h"
-
 
 class testApp : public ofBaseApp{
 

@@ -43,6 +43,7 @@ void testApp::setup(){
 	initRects();
 	ofEnableSmoothing();
 //				ofEnableAlphaBlending();
+
 	/*-------Alex-------*/
 	ofBackground(40);
 	physics.setup();
@@ -63,12 +64,12 @@ void testApp::update(){
 //	audio->addPoint(scaledVol*100);
 	//calculate average volume as a single float instead of per frequency
 	/*-------kinect side displays------*/
-	if(drawDJKinect){
-		//DJMODE.update(left, DjDepthSliderLow, DjDepthSliderHigh);
+/*	if(drawDJKinect){
+		DJMODE.update(left, DjDepthSliderLow, DjDepthSliderHigh);
 	}
 	if(drawAudKinect){
-		//Aud.update(cVol);
-	}
+		Aud.update();
+	}*/
 
 
 	bd.updateFFT();
@@ -78,8 +79,9 @@ void testApp::update(){
 	float fft_bins = 512.0f; //this really should be a class constant
 	pVol = cVol;
 	cVol = 0;
-	for(int i=0; i<fft_bins; i++)
+	for(int i=0; i<fft_bins; i++) 
 		cVol += bd.magnitude_average[i];
+	
 	cVol/=fft_bins;
 	//printf("%f \n", abs(pVol - cVol)*100);
 	if(abs(pVol - cVol)*100>1){
@@ -94,33 +96,24 @@ void testApp::update(){
 			if (!DJMODE.WheresMyDj){mode = PHYSICS;}
 			break;
 		case AUD:
-			Aud.update(cVol);
+			Aud.update(cVol*100);
 			break;
 		default:
 		case PHYSICS:
-			physics.addParticles(numParticles);
-			physics.updateSources(cVol *100, colorGen.getRandom(colors), isChanged, bd.isKick(), bd.isSnare());
+			physics.updateSources(cVol *100, colorGen.getRandom(colors), isChanged, false, false);
 			physics.update();
-			break;
-			//vid.update(mouseX, mouseY);
-			if(bd.isKick()){
-				vidX = (int) ofRandom(0, ofGetScreenWidth()-100);
-				vidY = (int) ofRandom(0, ofGetScreenHeight()-100);
-			}
+			vid.update(mouseX, mouseY);
 	}
 }
 
 //--------------------------------------------------------------
-void testApp::draw(){
+void testApp::draw() {
 	
 	ofSetBackgroundAuto(true);
 	//sound
 	//if(drawSound){
 	//	drawVolGraphs();
 		drawBeatBins();
-	//}
-
-
 	//modes
 	if(drawDisplay){
 		switch(mode){
@@ -153,23 +146,23 @@ void testApp::draw(){
 		ofRect(djRect);
 		ofTranslate(djRect.x, djRect.y);
 		ofPushStyle();
-		DJMODE.kinect.drawDepth(0, 0, djRect.width, djRect.height);
-		DJMODE.kinect.draw(0, 0, djRect.width, djRect.height);
+		//DJMODE.kinect.drawDepth(0, 0, djRect.width, djRect.height);
+		//DJMODE.kinect.draw(0, 0, djRect.width, djRect.height);
 		ofPopStyle();
 		ofPopMatrix();
 	}
 	if(drawAudKinect){
-		ofPushMatrix();
-		ofRect(audRect);
-		ofTranslate(audRect.x, audRect.y);
+	//	ofPushStyle();
+	//	ofSetColor(white);
+	//	ofRect(audRect);
+	//  ofPopStyle();
+		
 		ofPushStyle();
 		Aud.kinect.drawDepth(0, 0, audRect.width, audRect.height);
 		Aud.kinect.draw(0, 0, audRect.width, audRect.height);
 		ofPopStyle();
 		ofPopMatrix();
 	}
-
-	
 }
 
 /*--------------------------------------------------*
@@ -177,7 +170,7 @@ Draw Beat Bins
 
 Draw smoothed and raw volume graphs for each bin
  *--------------------------------------------------*/
-void testApp::drawBeatBins(){
+void testApp::drawBeatBins() {
 	float rectWidth = 512;
 	float rectHeight = 150;
 	float spacer = 16;
@@ -273,6 +266,8 @@ void testApp::audioIn(float *input, int bufferSize, int nChannels){
 	/*------Beat Detection-------*/
 	bd.audioReceived(input, bufferSize);
 }
+	
+
 
 void testApp::initRects(){
 	float spacer = 16;
@@ -364,6 +359,8 @@ void testApp::guiColors(ofxUIWidget *w){
 	w->setColorFillHighlight(ccomp4);
 	w->setColorOutline(ccomp2);*/
 }
+
+
 void testApp::guiSetup(){
 
     float dim = 16;
