@@ -50,7 +50,7 @@ void testApp::setup(){
 	vid.setup();
 	//curShade = CT_SOFT;
 	generateColors(CT_SOFT);
-	numParticles = 0;
+	numParticles = 9000;
 	/*-------Jake-------*/
 	//	DJ.setup();
 }
@@ -81,9 +81,8 @@ void testApp::update(){
 		case AUD:
 			break;
 		case PHYSICS:
-			//physics.addParticles(numParticles);
-			physics.updateSources(cVol *100, colorGen.getRandom(colors), isChanged, bd.isKick(), bd.isSnare());
-			physics.update();
+		//	physics.updateSources(cVol *100, colorGen.getRandom(colors), isChanged, bd.isKick(), bd.isSnare());
+		//	physics.update(bd, bpm);
 			break;
 		case VID:
 			if(bd.isKick()){
@@ -103,14 +102,14 @@ void testApp::draw(){
 	trackBeats(1,1);
 	ofSetBackgroundAuto(true);
 	//modes
-	if(drawDisplay){
+//	if(drawDisplay){
 		switch(mode){
 			case DJ:
 				break;
 			case AUD:
 				break;
 			case PHYSICS:
-				physics.render();
+			//	physics.render();
 				break;
 			case VID:
 				ofSetBackgroundAuto(false);
@@ -123,7 +122,7 @@ void testApp::draw(){
 				ofPopStyle();
 				break;
 		}
-	}
+	//}
 	if(drawSound){
 		drawBeatBins();
 		drawColorSwatches(guiWidth+10, 10);
@@ -139,6 +138,10 @@ void testApp::draw(){
 		ofSetColor(white);
 		ofRect(audRect);
 		ofPopStyle();
+	}
+
+	if(drawDisplay){
+		ofSaveFrame();
 	}
 }
 /*--------------------------------------------------*
@@ -163,8 +166,6 @@ bool testApp::trackBeats(int low, int high){
 		lengthOfBeat = (elapsedTime+1)/tapCount;
 		bpm = 60.0f / lengthOfBeat;
 		tapCount++;
-		
-		printf("BPM: %i %f %f\n", tapCount, bpm,  elapsedTime);
 	}
 	
 	return tap;
@@ -361,7 +362,7 @@ void testApp::guiSetup(){
 	w = gui->addWidgetSouthOf(new ofxUIToggle("DJ", drawDJKinect, dim, dim),"aud depth threshold"); guiColors(w);
 	w = gui->addWidgetEastOf(new ofxUIToggle("AUDIENCE", drawAudKinect, dim, dim), "DJ"); guiColors(w);
 	w = gui->addWidgetSouthOf(new ofxUITextInput("input", "describe your set", dim*12, dim*2),"AUDIENCE");guiColors(w);
-	w = gui->addWidgetEastOf(new ofxUIRotarySlider(dim*8, 0, 200, numParticles, "particle rebirth"),"input");guiColors(w);
+	w = gui->addWidgetEastOf(new ofxUIRotarySlider(dim*8, 0, 12000, numParticles, "particle rebirth"),"input");guiColors(w);
 	w = gui->addWidgetEastOf(new ofxUIRadio("source", particleModes, OFX_UI_ORIENTATION_VERTICAL,dim,dim,0,0),"particle rebirth" );guiColors(w); 
     audio = (ofxUIMovingGraph *) gui->addWidgetSouthOf(new ofxUIMovingGraph(dim*12, 64, volHistory, buffersize, -100, 100, "Volume"),"input"); 
 	w = gui->addWidgetSouthOf(new ofxUIToggle("beat debug", drawSound, dim, dim),"Volume");guiColors(w);
@@ -438,8 +439,10 @@ void testApp::mousePressed(int x, int y, int button){
 //--------------------------------------------------------------
 void testApp::mouseReleased(int x, int y, int button){
 	ofRectangle guiRect = ofRectangle(0,0,guiWidth, guiHeight);
-	if(!guiRect.inside(ofVec2f(x,y)))
-		physics.mousePressed( sourceType, ofVec3f(x,y,0));
+	if(mode == PHYSICS){
+		if(!guiRect.inside(ofVec2f(x,y)))
+			physics.mousePressed( sourceType, ofVec3f(x,y,0));
+	}
 }
 
 void testApp::exit()

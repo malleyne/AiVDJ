@@ -1,0 +1,4 @@
+/Users/drgti7/Desktop/OF/openFrameworks/apps/Ai2/AiVDJ/src/alex/physicsMode.cpp:18: error: prototype for 'void physicsMode::update()' does not match any in class 'physicsMode'
+/Users/drgti7/Desktop/OF/openFrameworks/apps/Ai2/AiVDJ/src/alex/physicsMode.h:80: error: candidate is: void physicsMode::update(beatDetect, float)
+/Users/drgti7/Desktop/OF/openFrameworks/apps/Ai2/AiVDJ/src/alex/physicsMode.cpp:49: error: prototype for 'void physicsMode::updateSources(float, ofColor, bool, bool, bool)' does not match any in class 'physicsMode'
+/Users/drgti7/Desktop/OF/openFrameworks/apps/Ai2/AiVDJ/src/alex/physicsMode.h:82: error: candidate is: void physicsMode::updateSources(float, ofColor, bool, beatDetect)

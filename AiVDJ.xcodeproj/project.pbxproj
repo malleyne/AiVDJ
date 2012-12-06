@@ -34,6 +34,12 @@
 		08AAE22D167083640079D5D8 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08AAE20B167083640079D5D8 /* tinyxml.cpp */; };
 		08AAE22E167083640079D5D8 /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08AAE20D167083640079D5D8 /* tinyxmlerror.cpp */; };
 		08AAE22F167083640079D5D8 /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08AAE20E167083640079D5D8 /* tinyxmlparser.cpp */; };
+		08AAE2B6167096910079D5D8 /* physicsMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08AAE2AB167096910079D5D8 /* physicsMode.cpp */; };
+		08AAE2B7167096910079D5D8 /* vidMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08AAE2AC167096910079D5D8 /* vidMode.cpp */; };
+		08AAE2B8167096910079D5D8 /* beatDetect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08AAE2AE167096910079D5D8 /* beatDetect.cpp */; };
+		08AAE2B9167096910079D5D8 /* testApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08AAE2B0167096910079D5D8 /* testApp.cpp */; };
+		08AAE2C2167097110079D5D8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08AAE2C1167097110079D5D8 /* main.cpp */; };
+		08AAE2D0167099B20079D5D8 /* fft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08AAE2CF167099B20079D5D8 /* fft.cpp */; };
 		BBAB23CB13894F3D00AA2426 /* GLUT.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BBAB23BE13894E4700AA2426 /* GLUT.framework */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
 		E45BE97B0E8CC7DD009D7055 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE9710E8CC7DD009D7055 /* AGL.framework */; };
@@ -45,8 +51,6 @@
 		E45BE9810E8CC7DD009D7055 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE9770E8CC7DD009D7055 /* CoreServices.framework */; };
 		E45BE9830E8CC7DD009D7055 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE9790E8CC7DD009D7055 /* OpenGL.framework */; };
 		E45BE9840E8CC7DD009D7055 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE97A0E8CC7DD009D7055 /* QuickTime.framework */; };
-		E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */; };
-		E4B69E210A3A1BDC003C02F2 /* testApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1E0A3A1BDC003C02F2 /* testApp.cpp */; };
 		E4C2424710CC5A17004149E2 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4C2424410CC5A17004149E2 /* AppKit.framework */; };
 		E4C2424810CC5A17004149E2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4C2424510CC5A17004149E2 /* Cocoa.framework */; };
 		E4C2424910CC5A17004149E2 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4C2424610CC5A17004149E2 /* IOKit.framework */; };
@@ -271,6 +275,17 @@
 		08AAE20C167083640079D5D8 /* tinyxml.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = tinyxml.h; path = ../../../addons/ofxXmlSettings/libs/tinyxml.h; sourceTree = SOURCE_ROOT; };
 		08AAE20D167083640079D5D8 /* tinyxmlerror.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = tinyxmlerror.cpp; path = ../../../addons/ofxXmlSettings/libs/tinyxmlerror.cpp; sourceTree = SOURCE_ROOT; };
 		08AAE20E167083640079D5D8 /* tinyxmlparser.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = tinyxmlparser.cpp; path = ../../../addons/ofxXmlSettings/libs/tinyxmlparser.cpp; sourceTree = SOURCE_ROOT; };
+		08AAE2AB167096910079D5D8 /* physicsMode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = physicsMode.cpp; sourceTree = "<group>"; };
+		08AAE2AC167096910079D5D8 /* vidMode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vidMode.cpp; sourceTree = "<group>"; };
+		08AAE2AD167096910079D5D8 /* vidMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vidMode.h; sourceTree = "<group>"; };
+		08AAE2AE167096910079D5D8 /* beatDetect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = beatDetect.cpp; sourceTree = "<group>"; };
+		08AAE2AF167096910079D5D8 /* beatDetect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = beatDetect.h; sourceTree = "<group>"; };
+		08AAE2B0167096910079D5D8 /* testApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = testApp.cpp; sourceTree = "<group>"; };
+		08AAE2B5167096910079D5D8 /* testApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testApp.h; sourceTree = "<group>"; };
+		08AAE2C1167097110079D5D8 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		08AAE2CD1670999F0079D5D8 /* physicsMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = physicsMode.h; sourceTree = "<group>"; };
+		08AAE2CE167099B20079D5D8 /* fft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fft.h; sourceTree = "<group>"; };
+		08AAE2CF167099B20079D5D8 /* fft.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fft.cpp; sourceTree = "<group>"; };
 		BBAB23BE13894E4700AA2426 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = ../../../libs/glut/lib/osx/GLUT.framework; sourceTree = "<group>"; };
 		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		E45BE9710E8CC7DD009D7055 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
@@ -283,9 +298,6 @@
 		E45BE9790E8CC7DD009D7055 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		E45BE97A0E8CC7DD009D7055 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
 		E4B69B5B0A3A1756003C02F2 /* AiVDJDebug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AiVDJDebug.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		E4B69E1D0A3A1BDC003C02F2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = SOURCE_ROOT; };
-		E4B69E1E0A3A1BDC003C02F2 /* testApp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = testApp.cpp; path = src/testApp.cpp; sourceTree = SOURCE_ROOT; };
-		E4B69E1F0A3A1BDC003C02F2 /* testApp.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = testApp.h; path = src/testApp.h; sourceTree = SOURCE_ROOT; };
 		E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = "openFrameworks-Info.plist"; sourceTree = "<group>"; };
 		E4C2424410CC5A17004149E2 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		E4C2424510CC5A17004149E2 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
@@ -839,6 +851,32 @@
 			name = ofxXmlSettings;
 			sourceTree = "<group>";
 		};
+		08AAE2A9167096910079D5D8 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				08AAE2CE167099B20079D5D8 /* fft.h */,
+				08AAE2CF167099B20079D5D8 /* fft.cpp */,
+				08AAE2C1167097110079D5D8 /* main.cpp */,
+				08AAE2AA167096910079D5D8 /* alex */,
+				08AAE2AE167096910079D5D8 /* beatDetect.cpp */,
+				08AAE2AF167096910079D5D8 /* beatDetect.h */,
+				08AAE2B0167096910079D5D8 /* testApp.cpp */,
+				08AAE2B5167096910079D5D8 /* testApp.h */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		08AAE2AA167096910079D5D8 /* alex */ = {
+			isa = PBXGroup;
+			children = (
+				08AAE2CD1670999F0079D5D8 /* physicsMode.h */,
+				08AAE2AB167096910079D5D8 /* physicsMode.cpp */,
+				08AAE2AC167096910079D5D8 /* vidMode.cpp */,
+				08AAE2AD167096910079D5D8 /* vidMode.h */,
+			);
+			path = alex;
+			sourceTree = "<group>";
+		};
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
@@ -902,25 +940,15 @@
 		E4B69B4A0A3A1720003C02F2 = {
 			isa = PBXGroup;
 			children = (
+				08AAE2A9167096910079D5D8 /* src */,
 				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
 				E4EB6923138AFD0F00A09F29 /* Project.xcconfig */,
-				E4B69E1C0A3A1BDC003C02F2 /* src */,
 				E4EEC9E9138DF44700A80321 /* openFrameworks */,
 				BB4B014C10F69532006C3DED /* addons */,
 				E45BE5980E8CC70C009D7055 /* frameworks */,
 				E4B69B5B0A3A1756003C02F2 /* AiVDJDebug.app */,
 			);
 			sourceTree = "<group>";
-		};
-		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
-				E4B69E1E0A3A1BDC003C02F2 /* testApp.cpp */,
-				E4B69E1F0A3A1BDC003C02F2 /* testApp.h */,
-			);
-			path = src;
-			sourceTree = SOURCE_ROOT;
 		};
 		E4EEC9E9138DF44700A80321 /* openFrameworks */ = {
 			isa = PBXGroup;
@@ -1015,8 +1043,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
-				E4B69E210A3A1BDC003C02F2 /* testApp.cpp in Sources */,
 				08AAE215167083640079D5D8 /* ofxColourTheory.cpp in Sources */,
 				08AAE216167083640079D5D8 /* Calibration.cpp in Sources */,
 				08AAE217167083640079D5D8 /* ContourFinder.cpp in Sources */,
@@ -1044,6 +1070,12 @@
 				08AAE22D167083640079D5D8 /* tinyxml.cpp in Sources */,
 				08AAE22E167083640079D5D8 /* tinyxmlerror.cpp in Sources */,
 				08AAE22F167083640079D5D8 /* tinyxmlparser.cpp in Sources */,
+				08AAE2B6167096910079D5D8 /* physicsMode.cpp in Sources */,
+				08AAE2B7167096910079D5D8 /* vidMode.cpp in Sources */,
+				08AAE2B8167096910079D5D8 /* beatDetect.cpp in Sources */,
+				08AAE2B9167096910079D5D8 /* testApp.cpp in Sources */,
+				08AAE2C2167097110079D5D8 /* main.cpp in Sources */,
+				08AAE2D0167099B20079D5D8 /* fft.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
