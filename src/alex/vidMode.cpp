@@ -6,7 +6,7 @@
   *-----------------------------------*/
   vidMode::ParticleController::Particle::Particle()
   {
-    pos = ofVec3f(ofRandom(ofGetScreenWidth()),ofRandom(ofGetScreenHeight()));
+    pos = ofVec3f(ofRandom(ofGetWidth()),ofRandom(ofGetHeight()));
     vel = ofVec3f(0,0,0);
   }
     
@@ -17,28 +17,29 @@
 	vel.limit(ofRandom(30));
     pos = pos+(vel);
       
-    if(pos.x<10)pos.x+=ofGetScreenWidth();
-    if(pos.x>ofGetScreenWidth())pos.x-=ofGetScreenWidth();
-    if(pos.y<120)pos.y+=ofGetScreenHeight();
-    if(pos.y>ofGetScreenHeight())pos.y-=ofGetScreenHeight();
+    if(pos.x<10)pos.x+=ofGetWidth();
+    if(pos.x>ofGetWidth())pos.x-=ofGetWidth();
+    if(pos.y<120)pos.y+=ofGetHeight();
+    if(pos.y>ofGetHeight())pos.y-=ofGetHeight();
   }
   
-  void vidMode::ParticleController::Particle::render(int x, int y, unsigned char * p)
+  void vidMode::ParticleController::Particle::render(int x, int y)
   {
 	ofPushStyle();
 	ofNoFill();
     ofSetColor(x/1.5,y/1.5,ofRandom(0,255),ofRandom(2,40));
+	//ofSetColor(x/1.5,ofRandom(2,40));
 
 	//RGB
 	int numPix = 480*640*3;
 	int realCoord = (640*3)*y + x;
 
-	int pixOffsetX = ((ofGetWindowWidth()/2)-320);
-	int pixOffsetY = ((ofGetWindowHeight()/2)-240);
+	int pixOffsetX = ((ofGetWidth()/2)-320);
+	int pixOffsetY = ((ofGetHeight()/2)-240);
 
 
 	//ofSetColor(x/1.5,y/1.5,ofRandom(0,255));
-	ofSetLineWidth(1.5);	
+	ofSetLineWidth(3);	
     ofLine(pos.x,pos.y,pos.x-vel.x,pos.y-vel.y);
 	ofPopStyle();
   }
@@ -48,7 +49,7 @@
 	ParticleController Class
   *-----------------------------------*/
   vidMode::ParticleController::ParticleController(){
-  numParticles = 7000;
+  numParticles = 9000;
       for(int i = 0; i < numParticles; i++)
     {
 		Particle p;
@@ -74,11 +75,11 @@
     }
   }
     
-  void vidMode::ParticleController::render(int x, int y, unsigned char * p)
+  void vidMode::ParticleController::render(int x, int y)
   {
     for(int i = 0; i < numParticles; i++)
     {
-      particles[i].render(x,y, p);
+      particles[i].render(x,y);
     }
   }
 
@@ -89,31 +90,147 @@
  vidMode::~vidMode(){}
 void vidMode::setup()
 {
-  numParticles = 7000;
-  p = ParticleController(numParticles);
+	/*---------------Flags--------------*/
+	ofEnableAlphaBlending();
+	ofSetVerticalSync(false);
 
-  	camWidth 		= 640;	// try to grab at this size. 
-	camHeight 		= 480;
-	
-	vidGrabber.setVerbose(true);
-	vidGrabber.initGrabber(camWidth,camHeight);
+	drawParticles = true;
+	ofSetBackgroundAuto(false);
+
+	seedX = ofRandom(100, 1900);
+	seedY = ofRandom(100, 1000);
+
+	/*---------------Video----------------*/
+	curVid.loadMovie("vid/nicki.mp4");
+	curVid.setFrame(100);
+	curVid.play();
+	curVid.setVolume(0);
+
+	vidWidth = curVid.width * (float)((float)ofGetWidth()/curVid.width);
+	vidHeight = curVid.height * (float)((float)ofGetHeight()/curVid.height);
+
+	bpm = 0;
+	numParticles = 7000;
+	p = ParticleController(numParticles);
+
+	/*-----------Shaaaaders ftw---------------*/
+	maskShader.load("composite.vert", "composite.frag");
+	topLayer.loadImage("bg.png");
+	particleTexture.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+	maskFbo.allocate(ofGetWidth(), ofGetHeight());
+	fbo.allocate(ofGetWidth(), ofGetHeight());
+
+	//hurts my heart, but what can you do
+	string shaderProgram = "#version 120\n \
+    #extension GL_ARB_texture_rectangle : enable\n \
+    \
+    uniform sampler2DRect tex0;\
+    uniform sampler2DRect maskTex;\
+    \
+    void main (void){\
+    vec2 pos = gl_TexCoord[0].st;\
+    \
+    vec3 src = texture2DRect(tex0, pos).rgb;\
+    float mask = texture2DRect(maskTex, pos).r;\
+    \
+    gl_FragColor = vec4( src , mask);\
+    }";
+    shader.setupShaderFromSource(GL_FRAGMENT_SHADER, shaderProgram);
+    shader.linkProgram(); 
+
+	//clear FBOs
+	maskFbo.begin();
+    ofClear(0,0,0,255);
+    maskFbo.end();
+    
+    fbo.begin();
+    ofClear(0,0,0,255);
+    fbo.end();
+
 
 }
-void vidMode::update(int x, int y)
+void vidMode::update(int x, int y, float _bpm, beatDetect bd)
 {
-  p.update(x,y);
+	//draw into an ofImage
+	bpm = _bpm;
+	if(!drawParticles)
+		updateSpeed();
+	else
+		p.update(seedX, seedY);
 
-  //camera garbage
-  vidGrabber.update();
-	//end camera garbage
+	curVid.update();
+
+	//fill fbos
+	maskFbo.begin();
+	 p.render(seedX, seedY);
+	 ofSetColor(255,255,255,ofRandom(0,10));
+	 ofRect(0,0,ofGetWidth(), ofGetHeight());
+    maskFbo.end();
+ 
+	fbo.begin();
+    // Cleaning everthing with alpha mask on 0 in order to make it transparent for default
+    ofClear(0, 0, 0, 0); 
+    
+    shader.begin();
+    shader.setUniformTexture("maskTex", maskFbo.getTextureReference(), 1 );
+
+	curVid.draw(0,0,vidWidth, vidHeight);
+
+    shader.end();
+    fbo.end();
+
+	if(bd.isSnare() && bd.isKick() && bd.isSnare()){// && (ofGetElapsedTimef()-time > 3))){
+		time = ofGetElapsedTimef();
+		//clear buffer
+		maskFbo.begin();
+		ofClear(0,0,0,30);
+		maskFbo.end();
+		//refresh x and y
+		
+		seedX = ofRandom(100, 1900);
+		seedY = ofRandom(100, 1000);
+	}
 }
 
 void vidMode::draw(int x, int y)
 {
-  p.render(x,y, vidGrabber.getPixels());
-  ofSetHexColor(0xffffff);
-  vidGrabber.draw(20,20);
-  //camera garbage
- 
 
+	ofSetHexColor(0xFFFFFF);
+	//draw video only
+	if(!drawParticles){
+		curVid.draw( 0, 0, vidWidth, vidHeight);
+		ofDrawBitmapString("vid speed: " + ofToString(curVid.getSpeed(),2),0,400);
+	}
+	//draw particle overlay
+	else{
+		ofSetColor(255,255);
+		topLayer.draw( 0, 0, vidWidth, vidHeight);
+		fbo.draw(0,0);
+
+	}
+}
+
+void vidMode::keyPressed(int key){
+	if(key == '0'){
+		curVid.firstFrame();
+	}
+	if(key == '1'){
+		drawParticles = !drawParticles;
+		ofSetBackgroundAuto(!drawParticles);
+	}
+	if(key == '2'){
+		maskFbo.begin();
+		ofClear(0,0,0,30);
+		maskFbo.end();
+	}
+	if(key == '3'){
+		seedX = ofRandom(100, 1900);
+		seedY = ofRandom(100, 1000);
+	}
+}
+
+void vidMode::updateSpeed(){
+	
+	float speed = ofMap(bpm, 60, 600, 0, 5);
+	curVid.setSpeed(speed);
 }

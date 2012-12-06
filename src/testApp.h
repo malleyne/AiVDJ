@@ -10,6 +10,7 @@
 #include "alex/vidMode.h"
 #include "melissa/audMode.h"
 
+
 class testApp : public ofBaseApp{
 
 	public:
@@ -95,6 +96,7 @@ class testApp : public ofBaseApp{
 
 		void drawVolGraphs();
 		void drawBeatBins();
+		bool trackBeats(int low, int high); //check subbands between low and high for beats
 
 		vector <float> left;
 		vector <float> right;
@@ -102,12 +104,14 @@ class testApp : public ofBaseApp{
 		
 		float cVol;
 		float pVol;
+		float lastBeatTime, startTime, lengthOfBeat, bpm;
+		int tapCount;
 
 		ofSoundStream soundStream;
 		ofxUIMovingGraph *audio;
 
 		beatDetect bd;
-		
+
 	// 0 output channels, 
 	// 2 input channels
 	// 44100 samples per second

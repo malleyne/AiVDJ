@@ -2,7 +2,7 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){
-
+	
 	//init color palette
 	cmain.setHex(0xe6e6e6); //background grey
 	ccomp1.setHex(0xd4ddd4); //highlight green
@@ -11,39 +11,39 @@ void testApp::setup(){
 	ccomp4.set(130,255,255); //highlight blue
 	ccomp5.setHex(0x5f5f5f); //dark grey
 	white = ofColor(255,255,255);
-
+	
 	/*-------Sound------*/
 	ofSetVerticalSync(true);
 	ofSetCircleResolution(80);
 	soundStream.listDevices();
-
+	
 	int bufferSize = 1024;
 	pVol = 0.0;
 	cVol = 0.0;
-
+	
 	left.assign(bufferSize, 0.0);
 	right.assign(bufferSize, 0.0);
 	//volHistory.assign(400, 0.0);
-
+	
 	//soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
 	ofSoundStreamSetup(0, 2, this, 44100, bufferSize, 4);
-
+	
 	/*--------GUI-----------*/
 	drawDJKinect = false;
 	drawAudKinect = false;
 	drawDisplay = true;
 	drawSound = true;
 	mode = PHYSICS;
-
+	
 	DjDepthSliderLow = 0;
-
+	
 	DjDepthSliderHigh = 1900;
-
+	
 	guiSetup();
 	initRects();
 	ofEnableSmoothing();
-//				ofEnableAlphaBlending();
-
+	//				ofEnableAlphaBlending();
+	
 	/*-------Alex-------*/
 	ofBackground(40);
 	physics.setup();
@@ -61,20 +61,20 @@ void testApp::setup(){
 //--------------------------------------------------------------
 void testApp::update(){
 	/*-------Sound------*/
-//	audio->addPoint(scaledVol*100);
+	//	audio->addPoint(scaledVol*100);
 	//calculate average volume as a single float instead of per frequency
 	/*-------kinect side displays------*/
-/*	if(drawDJKinect){
-		DJMODE.update(left, DjDepthSliderLow, DjDepthSliderHigh);
-	}
-	if(drawAudKinect){
-		Aud.update();
-	}*/
-
-
+	/*	if(drawDJKinect){
+	 DJMODE.update(left, DjDepthSliderLow, DjDepthSliderHigh);
+	 }
+	 if(drawAudKinect){
+	 Aud.update();
+	 }*/
+	
+	
 	bd.updateFFT();
-
-
+	
+	
 	bool isChanged = false;
 	float fft_bins = 512.0f; //this really should be a class constant
 	pVol = cVol;
@@ -87,7 +87,7 @@ void testApp::update(){
 	if(abs(pVol - cVol)*100>1){
 		isChanged = true;
 	}
-
+	
 	/*-------Modes-----*/
 	switch(mode){
 		case DJ:
@@ -113,34 +113,34 @@ void testApp::draw() {
 	//sound
 	//if(drawSound){
 	//	drawVolGraphs();
-		drawBeatBins();
+	drawBeatBins();
 	//modes
 	if(drawDisplay){
 		switch(mode){
-		case DJ:
-			//DJMODE.draw();
-			break;
-		case AUD:
-			Aud.draw();
-			break;
-		case PHYSICS:
-			physics.render();
-			break;
-		case VID:
-			ofSetBackgroundAuto(false);
-			ofSetColor(0,0,0, (int)ofRandom(10,30));
-			ofRect(0,0,ofGetScreenWidth(), ofGetScreenHeight());
-			//vid.draw(mouseX, mouseY);
-			break;
-		default:
+			case DJ:
+				//DJMODE.draw();
+				break;
+			case AUD:
+				Aud.draw();
+				break;
+			case PHYSICS:
+				physics.render();
+				break;
+			case VID:
+				ofSetBackgroundAuto(false);
+				ofSetColor(0,0,0, (int)ofRandom(10,30));
+				ofRect(0,0,ofGetScreenWidth(), ofGetScreenHeight());
+				//vid.draw(mouseX, mouseY);
+				break;
+			default:
 				ofPushStyle();
 				ofSetColor(white);
 				ofRect(displayRect);
 				ofPopStyle();
-			break;
+				break;
 		}
 	}
-
+	
 	if(drawDJKinect){
 		ofPushMatrix();
 		ofRect(djRect);
@@ -152,10 +152,10 @@ void testApp::draw() {
 		ofPopMatrix();
 	}
 	if(drawAudKinect){
-	//	ofPushStyle();
-	//	ofSetColor(white);
-	//	ofRect(audRect);
-	//  ofPopStyle();
+		//	ofPushStyle();
+		//	ofSetColor(white);
+		//	ofRect(audRect);
+		//  ofPopStyle();
 		
 		ofPushStyle();
 		Aud.kinect.drawDepth(0, 0, audRect.width, audRect.height);
@@ -166,9 +166,9 @@ void testApp::draw() {
 }
 
 /*--------------------------------------------------*
-Draw Beat Bins
-
-Draw smoothed and raw volume graphs for each bin
+ Draw Beat Bins
+ 
+ Draw smoothed and raw volume graphs for each bin
  *--------------------------------------------------*/
 void testApp::drawBeatBins() {
 	float rectWidth = 512;
@@ -192,13 +192,13 @@ void testApp::drawBeatBins() {
 	ofSetColor(white);
 	ofTranslate(0,spacer,0);
 	bd.drawSmoothedFFT();
-
+	
 	ofPushMatrix();
 	ofTranslate (32*3+26,0,0);
 	ofDrawBitmapString("Beat Detection",0,-spacer);
 	bd.drawBeats();
 	ofPopMatrix();
-
+	
 	ofTranslate(0,rectHeight/2+spacer*2,0);
 	if(bd.isSnare()){
 		ofSetColor(ccomp3);
@@ -220,42 +220,42 @@ void testApp::drawVolGraphs(){
 	float rectWidth = 512;
 	float rectHeight = 150;
 	float spacer = 16;
-
+	
 	ofPushStyle();
-		ofPushMatrix();
-		ofNoFill();
-		ofTranslate(ofGetWidth()- (rectWidth+spacer),ofGetHeight()-(rectHeight*2 + spacer*2), 0);
-		ofSetColor(white);
-		ofDrawBitmapString("Left Channel", 4, 18);	
-		ofSetLineWidth(1);	
-		ofRect(0, 0, rectWidth, rectHeight);
-		ofSetColor(245, 58, 135);
-		ofSetLineWidth(3);		
-			ofBeginShape();
-			for (int i = 0; i < left.size(); i++){
-				ofVertex(i*2, 100 -left[i]*180.0f);
-			}
-			ofEndShape(false);
-
-		ofTranslate(0, rectHeight + spacer, 0);			
-		ofSetColor(white);
-		ofDrawBitmapString("Right Channel", 4, 18);		
-		ofSetLineWidth(1);	
-		ofRect(0, 0, rectWidth, rectHeight);
-		ofSetColor(245, 58, 135);
-		ofSetLineWidth(3);					
-			ofBeginShape();
-			for (int i = 0; i < right.size(); i++){
-				ofVertex(i*2, 100 -right[i]*180.0f);
-			}
-			ofEndShape(false);			
-		ofPopMatrix();
+	ofPushMatrix();
+	ofNoFill();
+	ofTranslate(ofGetWidth()- (rectWidth+spacer),ofGetHeight()-(rectHeight*2 + spacer*2), 0);
+	ofSetColor(white);
+	ofDrawBitmapString("Left Channel", 4, 18);	
+	ofSetLineWidth(1);	
+	ofRect(0, 0, rectWidth, rectHeight);
+	ofSetColor(245, 58, 135);
+	ofSetLineWidth(3);		
+	ofBeginShape();
+	for (int i = 0; i < left.size(); i++){
+		ofVertex(i*2, 100 -left[i]*180.0f);
+	}
+	ofEndShape(false);
+	
+	ofTranslate(0, rectHeight + spacer, 0);			
+	ofSetColor(white);
+	ofDrawBitmapString("Right Channel", 4, 18);		
+	ofSetLineWidth(1);	
+	ofRect(0, 0, rectWidth, rectHeight);
+	ofSetColor(245, 58, 135);
+	ofSetLineWidth(3);					
+	ofBeginShape();
+	for (int i = 0; i < right.size(); i++){
+		ofVertex(i*2, 100 -right[i]*180.0f);
+	}
+	ofEndShape(false);			
+	ofPopMatrix();
 	ofPopStyle();
 }
 //--------------------------------------------------------------
 void testApp::audioIn(float *input, int bufferSize, int nChannels){	
 	// bd.audioReceived(input, bufferSize);
-
+	
 	float curVol = 0.0;
 	int numCounted = 0;	
 	//lets go through each sample and calculate the root mean square which is a rough way to calculate volume	
@@ -266,12 +266,12 @@ void testApp::audioIn(float *input, int bufferSize, int nChannels){
 	/*------Beat Detection-------*/
 	bd.audioReceived(input, bufferSize);
 }
-	
+
 
 
 void testApp::initRects(){
 	float spacer = 16;
-
+	
 	//vertical
 	float kinectHeight = (ofGetHeight() - guiHeight)/2 - spacer*3;
 	float kinectWidth = kinectHeight*(640.0/480.0);
@@ -285,10 +285,10 @@ void testApp::guiEvent(ofxUIEventArgs &e){
     
 	
 	/*---------------------------------*
-	These functions control the 4 big buttons up top.
-	Update all of the booleans and make sure to call
-	your setup functions below
-	*---------------------------------*/
+	 These functions control the 4 big buttons up top.
+	 Update all of the booleans and make sure to call
+	 your setup functions below
+	 *---------------------------------*/
 	if(name == "dJGod mode")
 	{
 		if (!DJMODE.WheresMyDj){DJMODE.WheresMyDj = true;}
@@ -307,7 +307,7 @@ void testApp::guiEvent(ofxUIEventArgs &e){
 		mode = VID;
 	}
 	/*---------------------------------*/
-
+	
     if(name == "RENDER"){
         ofxUIToggle *toggle = (ofxUIToggle *) e.widget;
         drawDisplay = toggle->getValue();
@@ -326,7 +326,7 @@ void testApp::guiEvent(ofxUIEventArgs &e){
 		DjDepthSliderHigh = slider->getScaledValueHigh(); 
 		DjDepthSliderLow = slider->getScaledValueLow(); 
 	}
- //   else if(name == "dJ testt")
+	//   else if(name == "dJ testt")
 	//{
 	//	ofxUISlider *slider = (ofxUISlider *) e.widget; 
 	//	testItt = slider->getScaledValue(); 
@@ -337,8 +337,8 @@ void testApp::guiEvent(ofxUIEventArgs &e){
 		slider2 = slider->getScaledValue(); 
 	}     
 	else if(name == "beat debug"){
-		 ofxUIToggle *toggle = (ofxUIToggle *) e.widget;
-		 drawSound = toggle->getValue();
+		ofxUIToggle *toggle = (ofxUIToggle *) e.widget;
+		drawSound = toggle->getValue();
 	}
 	/*----Particle Sliders-----*/
 	else if (name == "particle rebirth")
@@ -355,40 +355,40 @@ void testApp::guiEvent(ofxUIEventArgs &e){
 }
 void testApp::guiColors(ofxUIWidget *w){
 	/*w->setColorBack(ccomp1);
-	w->setColorFill(ccomp2);
-	w->setColorFillHighlight(ccomp4);
-	w->setColorOutline(ccomp2);*/
+	 w->setColorFill(ccomp2);
+	 w->setColorFillHighlight(ccomp4);
+	 w->setColorOutline(ccomp2);*/
 }
 
 
 void testApp::guiSetup(){
-
+	
     float dim = 16;
 	float labelOffset = 20;
 	guiWidth = 600;
 	guiHeight = 400;
 	ofxUIWidget *w;
-
+	
 	vector<string> names;
     names.push_back("physics mode");
     names.push_back("dJGod mode");
 	names.push_back("video mashup");
 	names.push_back("audience mode");
-
+	
 	vector<string> particleModes;
 	particleModes.push_back("emit");
 	particleModes.push_back("sink");
 	particleModes.push_back("orbit");
-
+	
 	int buffersize = 400;
 	for(int i=0; i<buffersize; i++)
 		volHistory.push_back(0);
-
+	
     //ofxUi doesn't update your variables for you, so if you add any extra toggles,
     //make sure to add the corresponding vars to the gui catch all function below.  
     gui = new ofxUICanvas(0,0,guiWidth, guiHeight);
 	gui->setTheme(OFX_UI_THEME_ZOOLANDER);
-
+	
 	w = gui->addWidgetDown(new ofxUILabel("AiVDJ", OFX_UI_FONT_LARGE)); guiColors(w);
 	w = gui->addWidgetDown(new ofxUISpacer(guiWidth - labelOffset, 2)); w->setColorFill(white);
 	w = gui->addWidgetDown(new ofxUIRadio("MODES", names, OFX_UI_ORIENTATION_HORIZONTAL,dim*2,dim*2,0,-100) );guiColors(w); 
@@ -410,8 +410,8 @@ void testApp::guiSetup(){
 //--------------------------------------------------------------
 
 /*-------------------------------------------------------------*
-Color Generation
-options: light,dark,bright,weak,neutral,fresh,soft,hard,warm,cool,intense
+ Color Generation
+ options: light,dark,bright,weak,neutral,fresh,soft,hard,warm,cool,intense
  *-------------------------------------------------------------*/
 
 void testApp::generateColors(ColourShade cs){
@@ -454,7 +454,7 @@ void testApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void testApp::keyReleased(int key){
-
+	
 }
 
 //--------------------------------------------------------------
@@ -465,7 +465,7 @@ void testApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void testApp::mouseDragged(int x, int y, int button){
-
+	
 }
 
 //--------------------------------------------------------------
@@ -483,22 +483,23 @@ void testApp::exit()
 {
     gui->saveSettings("GUI/guiSettings.xml");     
     delete gui; 
-
+	
 	DJMODE.exit();
 	Aud.exit();
 }
 
 //--------------------------------------------------------------
 void testApp::windowResized(int w, int h){
-
+	
 }
 
 //--------------------------------------------------------------
 void testApp::gotMessage(ofMessage msg){
-
+	
 }
 
 //--------------------------------------------------------------
 void testApp::dragEvent(ofDragInfo dragInfo){ 
-
+	
 }
+
