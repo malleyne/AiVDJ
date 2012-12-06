@@ -5,7 +5,7 @@
  *-----------------------------------------------------------*/
 
 #include "ofMain.h"
-#include "..\beatDetect.h"
+#include "beatDetect.h"
 
 class vidMode{
 	public:

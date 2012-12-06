@@ -28,6 +28,11 @@ void testApp::setup(){
 	//soundStream.setup(this, 0, 2, 44100, bufferSize, 4);
 	ofSoundStreamSetup(0, 2, this, 44100, bufferSize, 4);
 	
+	startTime = ofGetElapsedTimef();
+	lastBeatTime = 1;
+	lengthOfBeat = 1;
+	bpm = 1;
+	tapCount = 1;
 	/*--------GUI-----------*/
 	drawDJKinect = false;
 	drawAudKinect = false;
@@ -35,26 +40,19 @@ void testApp::setup(){
 	drawSound = true;
 	mode = PHYSICS;
 	
-	DjDepthSliderLow = 0;
-	
-	DjDepthSliderHigh = 1900;
-	
 	guiSetup();
 	initRects();
 	ofEnableSmoothing();
-	//				ofEnableAlphaBlending();
-	
-	/*-------Alex-------*/
-	ofBackground(40);
+	ofEnableAlphaBlending();
+	ofBackground(80);
+	/*-------Alex------*/
 	physics.setup();
-	//vid.setup();
+	vid.setup();
 	//curShade = CT_SOFT;
 	generateColors(CT_SOFT);
 	numParticles = 0;
 	/*-------Jake-------*/
-	//DJMODE.setup();
-	/*------Melissa-----*/
-	Aud.setup();
+	//	DJ.setup();
 }
 
 
@@ -63,25 +61,13 @@ void testApp::update(){
 	/*-------Sound------*/
 	//	audio->addPoint(scaledVol*100);
 	//calculate average volume as a single float instead of per frequency
-	/*-------kinect side displays------*/
-	/*	if(drawDJKinect){
-	 DJMODE.update(left, DjDepthSliderLow, DjDepthSliderHigh);
-	 }
-	 if(drawAudKinect){
-	 Aud.update();
-	 }*/
-	
-	
 	bd.updateFFT();
-	
-	
 	bool isChanged = false;
 	float fft_bins = 512.0f; //this really should be a class constant
 	pVol = cVol;
 	cVol = 0;
-	for(int i=0; i<fft_bins; i++) 
+	for(int i=0; i<fft_bins; i++)
 		cVol += bd.magnitude_average[i];
-	
 	cVol/=fft_bins;
 	//printf("%f \n", abs(pVol - cVol)*100);
 	if(abs(pVol - cVol)*100>1){
@@ -91,46 +77,44 @@ void testApp::update(){
 	/*-------Modes-----*/
 	switch(mode){
 		case DJ:
-			//DJMODE.update(left, DjDepthSliderLow, DjDepthSliderHigh);
-			//DJMODE.updateGlobals(colorGen.getRandom(colors), isChanged);
-			if (!DJMODE.WheresMyDj){mode = PHYSICS;}
 			break;
 		case AUD:
-			Aud.update(cVol*100);
+			break;
+		case PHYSICS:
+			//physics.addParticles(numParticles);
+			physics.updateSources(cVol *100, colorGen.getRandom(colors), isChanged, bd.isKick(), bd.isSnare());
+			physics.update();
+			break;
+		case VID:
+			if(bd.isKick()){
+				vidX = (int) ofRandom(0, ofGetScreenWidth()-100);
+				vidY = (int) ofRandom(0, ofGetScreenHeight()-100);
+			}
+			vid.update(mouseX, mouseY, bpm, bd);
 			break;
 		default:
-		case PHYSICS:
-			physics.updateSources(cVol *100, colorGen.getRandom(colors), isChanged, false, false);
-			physics.update();
-			vid.update(mouseX, mouseY);
+			break;
 	}
 }
 
 //--------------------------------------------------------------
-void testApp::draw() {
+void testApp::draw(){
 	
+	trackBeats(1,1);
 	ofSetBackgroundAuto(true);
-	//sound
-	//if(drawSound){
-	//	drawVolGraphs();
-	drawBeatBins();
 	//modes
 	if(drawDisplay){
 		switch(mode){
 			case DJ:
-				//DJMODE.draw();
 				break;
 			case AUD:
-				Aud.draw();
 				break;
 			case PHYSICS:
 				physics.render();
 				break;
 			case VID:
 				ofSetBackgroundAuto(false);
-				ofSetColor(0,0,0, (int)ofRandom(10,30));
-				ofRect(0,0,ofGetScreenWidth(), ofGetScreenHeight());
-				//vid.draw(mouseX, mouseY);
+				vid.draw(mouseX, mouseY);
 				break;
 			default:
 				ofPushStyle();
@@ -140,37 +124,57 @@ void testApp::draw() {
 				break;
 		}
 	}
-	
+	if(drawSound){
+		drawBeatBins();
+		drawColorSwatches(guiWidth+10, 10);
+	}
 	if(drawDJKinect){
-		ofPushMatrix();
-		ofRect(djRect);
-		ofTranslate(djRect.x, djRect.y);
 		ofPushStyle();
-		//DJMODE.kinect.drawDepth(0, 0, djRect.width, djRect.height);
-		//DJMODE.kinect.draw(0, 0, djRect.width, djRect.height);
+		ofSetColor(white);
+		ofRect(djRect);
 		ofPopStyle();
-		ofPopMatrix();
 	}
 	if(drawAudKinect){
-		//	ofPushStyle();
-		//	ofSetColor(white);
-		//	ofRect(audRect);
-		//  ofPopStyle();
-		
 		ofPushStyle();
-		Aud.kinect.drawDepth(0, 0, audRect.width, audRect.height);
-		Aud.kinect.draw(0, 0, audRect.width, audRect.height);
+		ofSetColor(white);
+		ofRect(audRect);
 		ofPopStyle();
-		ofPopMatrix();
 	}
 }
-
+/*--------------------------------------------------*
+ BPM tracking
+ *--------------------------------------------------*/
+bool testApp::trackBeats(int low, int high){
+	float curTime = ofGetElapsedTimef();
+	bool tap = true;
+	
+	for(int i=low; i<= high; i++){
+		if(!bd.isBeat(i))
+			tap = false;
+	}
+	
+	if( (curTime - lastBeatTime) > 2.0){
+		tapCount = 1;
+		startTime = curTime;
+	}
+	if(tap){
+		lastBeatTime = curTime;
+		float elapsedTime = (curTime - startTime);
+		lengthOfBeat = (elapsedTime+1)/tapCount;
+		bpm = 60.0f / lengthOfBeat;
+		tapCount++;
+		
+		printf("BPM: %i %f %f\n", tapCount, bpm,  elapsedTime);
+	}
+	
+	return tap;
+}
 /*--------------------------------------------------*
  Draw Beat Bins
  
  Draw smoothed and raw volume graphs for each bin
  *--------------------------------------------------*/
-void testApp::drawBeatBins() {
+void testApp::drawBeatBins(){
 	float rectWidth = 512;
 	float rectHeight = 150;
 	float spacer = 16;
@@ -197,6 +201,9 @@ void testApp::drawBeatBins() {
 	ofTranslate (32*3+26,0,0);
 	ofDrawBitmapString("Beat Detection",0,-spacer);
 	bd.drawBeats();
+	ofTranslate (32*3+26,0,0);
+	ofDrawBitmapString("BPM: " + ofToString(bpm), 0, -spacer);
+	
 	ofPopMatrix();
 	
 	ofTranslate(0,rectHeight/2+spacer*2,0);
@@ -215,44 +222,8 @@ void testApp::drawBeatBins() {
 	ofPopMatrix();
 }
 
-void testApp::drawVolGraphs(){
-	// draw the left channel:
-	float rectWidth = 512;
-	float rectHeight = 150;
-	float spacer = 16;
-	
-	ofPushStyle();
-	ofPushMatrix();
-	ofNoFill();
-	ofTranslate(ofGetWidth()- (rectWidth+spacer),ofGetHeight()-(rectHeight*2 + spacer*2), 0);
-	ofSetColor(white);
-	ofDrawBitmapString("Left Channel", 4, 18);	
-	ofSetLineWidth(1);	
-	ofRect(0, 0, rectWidth, rectHeight);
-	ofSetColor(245, 58, 135);
-	ofSetLineWidth(3);		
-	ofBeginShape();
-	for (int i = 0; i < left.size(); i++){
-		ofVertex(i*2, 100 -left[i]*180.0f);
-	}
-	ofEndShape(false);
-	
-	ofTranslate(0, rectHeight + spacer, 0);			
-	ofSetColor(white);
-	ofDrawBitmapString("Right Channel", 4, 18);		
-	ofSetLineWidth(1);	
-	ofRect(0, 0, rectWidth, rectHeight);
-	ofSetColor(245, 58, 135);
-	ofSetLineWidth(3);					
-	ofBeginShape();
-	for (int i = 0; i < right.size(); i++){
-		ofVertex(i*2, 100 -right[i]*180.0f);
-	}
-	ofEndShape(false);			
-	ofPopMatrix();
-	ofPopStyle();
-}
 //--------------------------------------------------------------
+
 void testApp::audioIn(float *input, int bufferSize, int nChannels){	
 	// bd.audioReceived(input, bufferSize);
 	
@@ -263,11 +234,10 @@ void testApp::audioIn(float *input, int bufferSize, int nChannels){
 		left[i]		= input[i*2]*0.5;
 		right[i]	= input[i*2+1]*0.5;
 	}
+	
 	/*------Beat Detection-------*/
 	bd.audioReceived(input, bufferSize);
 }
-
-
 
 void testApp::initRects(){
 	float spacer = 16;
@@ -291,7 +261,6 @@ void testApp::guiEvent(ofxUIEventArgs &e){
 	 *---------------------------------*/
 	if(name == "dJGod mode")
 	{
-		if (!DJMODE.WheresMyDj){DJMODE.WheresMyDj = true;}
 		mode = DJ;
 	}
 	else if(name == "physics mode")
@@ -323,19 +292,13 @@ void testApp::guiEvent(ofxUIEventArgs &e){
     else if(name == "dJ depth threshold")
 	{
 		ofxUIRangeSlider *slider = (ofxUIRangeSlider *) e.widget; 
-		DjDepthSliderHigh = slider->getScaledValueHigh(); 
-		DjDepthSliderLow = slider->getScaledValueLow(); 
+		slider1 = slider->getScaledValueHigh(); 
 	}
-	//   else if(name == "dJ testt")
-	//{
-	//	ofxUISlider *slider = (ofxUISlider *) e.widget; 
-	//	testItt = slider->getScaledValue(); 
-	//}
     else if(name == "aud depth threshold")
 	{
 		ofxUISlider *slider = (ofxUISlider *) e.widget; 
 		slider2 = slider->getScaledValue(); 
-	}     
+	}   
 	else if(name == "beat debug"){
 		ofxUIToggle *toggle = (ofxUIToggle *) e.widget;
 		drawSound = toggle->getValue();
@@ -359,8 +322,6 @@ void testApp::guiColors(ofxUIWidget *w){
 	 w->setColorFillHighlight(ccomp4);
 	 w->setColorOutline(ccomp2);*/
 }
-
-
 void testApp::guiSetup(){
 	
     float dim = 16;
@@ -395,9 +356,8 @@ void testApp::guiSetup(){
     w = gui->addWidgetDown(new ofxUIToggle( "RENDER", drawDisplay, dim, dim));guiColors(w);
     
     //Sliders for style
-	w = gui->addWidgetEastOf(new ofxUIRangeSlider("dJ depth threshold", 0, 5000, 0, 1900, dim*25, dim),"RENDER"); guiColors(w);
+	w = gui->addWidgetEastOf(new ofxUIRangeSlider("dJ depth threshold", 0, 5000, 440, 1400, dim*25, dim),"RENDER"); guiColors(w);
 	w = gui->addWidgetSouthOf(new ofxUIRangeSlider("aud depth threshold", 0, 5000, 440, 4000, dim*25, dim),"dJ depth threshold"); guiColors(w);
-	//w = gui->addWidgetSouthOf(new ofxUISlider("dJ testt", 1, 100, 40, dim*25, dim),"aud depth threshold"); guiColors(w);
 	w = gui->addWidgetSouthOf(new ofxUIToggle("DJ", drawDJKinect, dim, dim),"aud depth threshold"); guiColors(w);
 	w = gui->addWidgetEastOf(new ofxUIToggle("AUDIENCE", drawAudKinect, dim, dim), "DJ"); guiColors(w);
 	w = gui->addWidgetSouthOf(new ofxUITextInput("input", "describe your set", dim*12, dim*2),"AUDIENCE");guiColors(w);
@@ -435,7 +395,10 @@ void testApp::drawColorSwatches(int x, int y){
 }
 void testApp::keyPressed(int key){
 	if(drawDJ){
-		DJMODE.DJkeyPressed(key);
+		//		DJ.DJkeyPressed(key);
+	}
+	if(mode == VID){
+		vid.keyPressed(key);
 	}
 	if( key == 's' ){
 		soundStream.start();
@@ -484,8 +447,7 @@ void testApp::exit()
     gui->saveSettings("GUI/guiSettings.xml");     
     delete gui; 
 	
-	DJMODE.exit();
-	Aud.exit();
+	//DJ.exit();
 }
 
 //--------------------------------------------------------------
