@@ -1,0 +1,6 @@
+ofxColourTheory
+ofxCv
+ofxKinect
+ofxOpenCv
+ofxUI
+ofxXmlSettings
