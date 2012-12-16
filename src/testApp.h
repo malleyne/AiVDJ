@@ -7,6 +7,8 @@
 
 #include "alex/physicsMode.h"
 #include "alex/vidMode.h"
+#include "melissa/audMode.h"
+
 //#include "jake/djMode.h"
 
 
@@ -105,6 +107,10 @@ public:
 	ofxUIMovingGraph *audio;
 	
 	beatDetect bd;
+	
+	/*------------Melissa-----------*/
+	audMode Aud;
+	/*----------------------------*/
 	
 	// 0 output channels, 
 	// 2 input channels

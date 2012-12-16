@@ -53,6 +53,8 @@ void testApp::setup(){
 	numParticles = 9000;
 	/*-------Jake-------*/
 	//	DJ.setup();
+	/*-------Melissa------*/
+	Aud.setup();
 }
 
 
@@ -79,6 +81,7 @@ void testApp::update(){
 		case DJ:
 			break;
 		case AUD:
+			Aud.update(bd);
 			break;
 		case PHYSICS:
 		//	physics.updateSources(cVol *100, colorGen.getRandom(colors), isChanged, bd.isKick(), bd.isSnare());
@@ -107,6 +110,7 @@ void testApp::draw(){
 			case DJ:
 				break;
 			case AUD:
+				Aud.draw();
 				break;
 			case PHYSICS:
 			//	physics.render();
@@ -323,6 +327,7 @@ void testApp::guiColors(ofxUIWidget *w){
 	 w->setColorFillHighlight(ccomp4);
 	 w->setColorOutline(ccomp2);*/
 }
+
 void testApp::guiSetup(){
 	
     float dim = 16;
@@ -381,6 +386,7 @@ void testApp::generateColors(ColourShade cs){
 		colors.push_back(colorGen.getColor(50, colorGen.getColourConstraints(cs)));
 	}
 }
+
 void testApp::drawColorSwatches(int x, int y){
 	ofPushMatrix();
 	ofPushStyle();
@@ -394,6 +400,7 @@ void testApp::drawColorSwatches(int x, int y){
 	ofPopStyle();
 	ofPopMatrix();
 }
+
 void testApp::keyPressed(int key){
 	if(drawDJ){
 		//		DJ.DJkeyPressed(key);

@@ -40,6 +40,7 @@
 		08AAE2B9167096910079D5D8 /* testApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08AAE2B0167096910079D5D8 /* testApp.cpp */; };
 		08AAE2C2167097110079D5D8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08AAE2C1167097110079D5D8 /* main.cpp */; };
 		08AAE2D0167099B20079D5D8 /* fft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08AAE2CF167099B20079D5D8 /* fft.cpp */; };
+		08AAE3701671323D0079D5D8 /* audMode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08AAE36D1671323D0079D5D8 /* audMode.cpp */; };
 		BBAB23CB13894F3D00AA2426 /* GLUT.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = BBAB23BE13894E4700AA2426 /* GLUT.framework */; };
 		E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4328148138ABC890047C5CB /* openFrameworksDebug.a */; };
 		E45BE97B0E8CC7DD009D7055 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E45BE9710E8CC7DD009D7055 /* AGL.framework */; };
@@ -286,6 +287,9 @@
 		08AAE2CD1670999F0079D5D8 /* physicsMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = physicsMode.h; sourceTree = "<group>"; };
 		08AAE2CE167099B20079D5D8 /* fft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fft.h; sourceTree = "<group>"; };
 		08AAE2CF167099B20079D5D8 /* fft.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = fft.cpp; sourceTree = "<group>"; };
+		08AAE36D1671323D0079D5D8 /* audMode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audMode.cpp; sourceTree = "<group>"; };
+		08AAE36E1671323D0079D5D8 /* audMode.cpp.orig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = audMode.cpp.orig; sourceTree = "<group>"; };
+		08AAE36F1671323D0079D5D8 /* audMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audMode.h; sourceTree = "<group>"; };
 		BBAB23BE13894E4700AA2426 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = ../../../libs/glut/lib/osx/GLUT.framework; sourceTree = "<group>"; };
 		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		E45BE9710E8CC7DD009D7055 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = /System/Library/Frameworks/AGL.framework; sourceTree = "<absolute>"; };
@@ -854,6 +858,7 @@
 		08AAE2A9167096910079D5D8 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				08AAE36C1671323D0079D5D8 /* melissa */,
 				08AAE2CE167099B20079D5D8 /* fft.h */,
 				08AAE2CF167099B20079D5D8 /* fft.cpp */,
 				08AAE2C1167097110079D5D8 /* main.cpp */,
@@ -875,6 +880,16 @@
 				08AAE2AD167096910079D5D8 /* vidMode.h */,
 			);
 			path = alex;
+			sourceTree = "<group>";
+		};
+		08AAE36C1671323D0079D5D8 /* melissa */ = {
+			isa = PBXGroup;
+			children = (
+				08AAE36D1671323D0079D5D8 /* audMode.cpp */,
+				08AAE36E1671323D0079D5D8 /* audMode.cpp.orig */,
+				08AAE36F1671323D0079D5D8 /* audMode.h */,
+			);
+			path = melissa;
 			sourceTree = "<group>";
 		};
 		BB4B014C10F69532006C3DED /* addons */ = {
@@ -1076,6 +1091,7 @@
 				08AAE2B9167096910079D5D8 /* testApp.cpp in Sources */,
 				08AAE2C2167097110079D5D8 /* main.cpp in Sources */,
 				08AAE2D0167099B20079D5D8 /* fft.cpp in Sources */,
+				08AAE3701671323D0079D5D8 /* audMode.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
